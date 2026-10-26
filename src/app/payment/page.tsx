@@ -8,7 +8,14 @@ export default function PaymentPage() {
   return (
     <InfoPage title="Оплата">
       <p>{storeDraft.payment}</p>
-      <p>Данные банковских карт магазин не принимает и не хранит.</p>
+      <p>
+        Карточные данные вводит только Stripe Checkout. Магазин не принимает и не хранит номера
+        карт.
+      </p>
+      <p>
+        Тестовая карта: <span className="font-mono text-ink">4242 4242 4242 4242</span>, любой
+        будущий срок, любой CVC.
+      </p>
     </InfoPage>
   )
 }

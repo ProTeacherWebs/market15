@@ -7,6 +7,7 @@ import { Field } from "@/components/field"
 import { useShop } from "@/components/shop-provider"
 import { formatUzs, products } from "@/data/catalog"
 import { storeDraft } from "@/data/store"
+import { startStripeCheckoutAction } from "@/lib/payment-actions"
 
 type Errors = Partial<Record<"name" | "phone" | "email" | "address", string>>
 
@@ -54,7 +55,16 @@ export default function CheckoutPage() {
       setFormError(result.error)
       return
     }
-    router.push(`/checkout/result?order=${result.order.number}`)
+    const pay = await startStripeCheckoutAction(result.order.number)
+    if (pay.ok) {
+      router.push(pay.url)
+      return
+    }
+    setPending(false)
+    const message = pay.error ?? "Не удалось открыть Stripe"
+    router.push(
+      `/checkout/result?order=${encodeURIComponent(result.order.number)}&payError=${encodeURIComponent(message)}`,
+    )
   }
 
   if (!shop.ready) {
