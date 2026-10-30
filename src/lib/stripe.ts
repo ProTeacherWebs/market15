@@ -1,4 +1,5 @@
 import Stripe from "stripe"
+import { getSiteUrl } from "@/lib/site-url"
 
 export type PaymentMode = "stripe_test" | "stripe_live"
 
@@ -9,8 +10,7 @@ export function getPaymentMode(): PaymentMode {
 }
 
 export function getAppBaseUrl() {
-  const url = process.env.AUTH_URL || process.env.APP_URL || "http://localhost:3000"
-  return url.replace(/\/$/, "")
+  return getSiteUrl()
 }
 
 /** Stripe не принимает UZS — для test mode конвертируем в USD по курсу из env. */

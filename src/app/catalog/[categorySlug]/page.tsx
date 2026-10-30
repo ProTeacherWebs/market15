@@ -24,9 +24,15 @@ type PageProps = {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { categorySlug } = await params
   const category = await findCategoryBySlug(categorySlug)
+  if (!category) notFound()
   return {
-    title: category?.name ?? "Категория",
-    description: category?.description ?? "Категория каталога VOLT STORE.",
+    title: category.name,
+    description: category.description,
+    openGraph: {
+      title: category.name,
+      description: category.description,
+      images: category.imageUrl ? [{ url: category.imageUrl, alt: category.name }] : undefined,
+    },
   }
 }
 

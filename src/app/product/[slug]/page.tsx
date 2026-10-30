@@ -30,9 +30,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params
   const product = await findProductBySlug(slug)
   if (!product) notFound()
+  const image = product.images[0]?.url
   return {
     title: product.name,
     description: product.shortDescription,
+    openGraph: {
+      title: product.name,
+      description: product.shortDescription,
+      images: image ? [{ url: image, alt: product.images[0]?.alt || product.name }] : undefined,
+    },
   }
 }
 

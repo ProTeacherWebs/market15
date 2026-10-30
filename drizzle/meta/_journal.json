@@ -15,6 +15,13 @@
       "when": 1792752183887,
       "tag": "0001_auth_orders",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793356086656,
+      "tag": "0002_telegram_user",
+      "breakpoints": true
     }
   ]
 }

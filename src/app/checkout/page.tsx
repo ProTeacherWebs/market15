@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useRef, useState } from "react"
 import { Field } from "@/components/field"
+import { useAppHref } from "@/components/link-base"
 import { useShop } from "@/components/shop-provider"
 import { formatUzs, products } from "@/data/catalog"
 import { storeDraft } from "@/data/store"
@@ -14,6 +15,7 @@ type Errors = Partial<Record<"name" | "phone" | "email" | "address", string>>
 export default function CheckoutPage() {
   const shop = useShop()
   const router = useRouter()
+  const resultBase = useAppHref("/checkout/result")
   const [method, setMethod] = useState<"pickup" | "courier">("pickup")
   const [errors, setErrors] = useState<Errors>({})
   const [formError, setFormError] = useState("")
@@ -63,7 +65,7 @@ export default function CheckoutPage() {
     setPending(false)
     const message = pay.error ?? "Не удалось открыть Stripe"
     router.push(
-      `/checkout/result?order=${encodeURIComponent(result.order.number)}&payError=${encodeURIComponent(message)}`,
+      `${resultBase}?order=${encodeURIComponent(result.order.number)}&payError=${encodeURIComponent(message)}`,
     )
   }
 

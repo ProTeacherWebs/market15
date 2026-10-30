@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm"
 import { z } from "zod"
 import { db } from "@/db"
 import { accounts, sessions, users, verificationTokens } from "@/db/schema"
+import { upsertTelegramUser, verifyTelegramInitData } from "@/lib/telegram"
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -16,6 +17,7 @@ const credentialsSchema = z.object({
 const googleClientId = process.env.AUTH_GOOGLE_ID ?? process.env.GOOGLE_CLIENT_ID
 const googleClientSecret = process.env.AUTH_GOOGLE_SECRET ?? process.env.GOOGLE_CLIENT_SECRET
 const googleConfigured = Boolean(googleClientId && googleClientSecret)
+const telegramConfigured = Boolean(process.env.TELEGRAM_BOT_TOKEN)
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: DrizzleAdapter(db, {
@@ -61,6 +63,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       },
     }),
+    ...(telegramConfigured
+      ? [
+          Credentials({
+            id: "telegram",
+            name: "Telegram",
+            credentials: {
+              initData: { label: "initData", type: "text" },
+            },
+            authorize: async (raw) => {
+              const initData = String(raw?.initData ?? "")
+              if (!initData) return null
+              const verified = verifyTelegramInitData(initData, process.env.TELEGRAM_BOT_TOKEN!)
+              if (!verified.ok) return null
+              const user = await upsertTelegramUser(verified.user)
+              return {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                image: user.image,
+              }
+            },
+          }),
+        ]
+      : []),
   ],
   callbacks: {
     async jwt({ token, user, account }) {
@@ -81,3 +107,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 })
 
 export const isGoogleAuthEnabled = googleConfigured
+export const isTelegramAuthEnabled = telegramConfigured

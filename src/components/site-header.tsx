@@ -77,6 +77,8 @@ export function SiteHeader() {
     setScrolled(value > 12)
   })
 
+  if (pathname.startsWith("/tg")) return null
+
   useEffect(() => {
     setOpen(false)
   }, [pathname])

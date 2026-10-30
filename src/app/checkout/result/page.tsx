@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Suspense, useEffect, useState } from "react"
+import { useAppHref } from "@/components/link-base"
 import { useShop } from "@/components/shop-provider"
 import { formatUzs } from "@/data/catalog"
 import { startStripeCheckoutAction, syncStripePaymentAction } from "@/lib/payment-actions"
@@ -24,6 +25,7 @@ function Result() {
   const paymentFlag = params.get("payment")
   const payErrorParam = params.get("payError")
   const shop = useShop()
+  const accountOrderHref = useAppHref(number ? `/account/orders/${number}` : "/account")
   const [order, setOrder] = useState<ShopOrder | null>(null)
   const [loading, setLoading] = useState(true)
   const [payError, setPayError] = useState(payErrorParam ?? "")
@@ -126,7 +128,7 @@ function Result() {
       ) : (
         <p className="mt-6 text-sm text-accent">Оплата подтверждена.</p>
       )}
-      <Link href={`/account/orders/${order.number}`} className="mt-6 block text-accent">
+      <Link href={accountOrderHref} className="mt-6 block text-accent">
         Открыть в аккаунте
       </Link>
     </>

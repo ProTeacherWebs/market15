@@ -2,11 +2,17 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { formatUzs, products } from "@/data/catalog"
+import { useAppHref } from "@/components/link-base"
 import { useShop } from "@/components/shop-provider"
+import { formatUzs, products } from "@/data/catalog"
 
 export default function CartPage() {
   const shop = useShop()
+  const catalogHref = useAppHref("/catalog")
+  const checkoutHref = useAppHref("/checkout")
+  const pathPrefix = catalogHref.endsWith("/catalog")
+    ? catalogHref.slice(0, -"/catalog".length)
+    : ""
   const lines = shop.cart.flatMap((line) => {
     const product = products.find((item) => item.id === line.productId && item.isActive)
     if (!product) return []
@@ -23,7 +29,7 @@ export default function CartPage() {
       ) : lines.length === 0 ? (
         <p className="mt-8 text-ink">
           Корзина пуста. Перейдите в{" "}
-          <Link href="/catalog" className="text-accent">
+          <Link href={catalogHref} className="text-accent">
             каталог
           </Link>
           .
@@ -34,13 +40,16 @@ export default function CartPage() {
             const image = product.images[0]
             return (
               <div key={product.id} className="grid grid-cols-[96px_1fr] gap-4 border-b border-line pb-6">
-                <Link href={`/product/${product.slug}`} className="relative block aspect-square overflow-hidden rounded-[10px] bg-white">
+                <Link
+                  href={`${pathPrefix}/product/${product.slug}`}
+                  className="relative block aspect-square overflow-hidden rounded-[10px] bg-white"
+                >
                   {image ? (
                     <Image src={image.url} alt={image.alt} fill sizes="96px" className="object-contain" />
                   ) : null}
                 </Link>
                 <div>
-                  <Link href={`/product/${product.slug}`} className="text-ink">
+                  <Link href={`${pathPrefix}/product/${product.slug}`} className="text-ink">
                     {product.name}
                   </Link>
                   <p className="mt-1 text-sm text-muted">{formatUzs(product.priceUzs)}</p>
@@ -79,7 +88,7 @@ export default function CartPage() {
             </p>
           </div>
           <Link
-            href="/checkout"
+            href={checkoutHref}
             className="inline-flex h-11 w-fit items-center rounded-full bg-accent px-5 text-sm font-medium text-accent-ink"
           >
             Оформить

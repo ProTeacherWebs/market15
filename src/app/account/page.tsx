@@ -2,11 +2,18 @@
 
 import Link from "next/link"
 import { signOut } from "next-auth/react"
-import { formatUzs } from "@/data/catalog"
+import { usePathname } from "next/navigation"
+import { useAppHref } from "@/components/link-base"
 import { useShop } from "@/components/shop-provider"
+import { formatUzs } from "@/data/catalog"
 
 export default function AccountPage() {
   const shop = useShop()
+  const pathname = usePathname()
+  const loginHref = useAppHref("/login")
+  const registerHref = useAppHref("/register")
+  const ordersBase = useAppHref("/account/orders")
+  const inTg = pathname.startsWith("/tg")
 
   return (
     <main className="mx-auto w-full max-w-[720px] px-4 py-8">
@@ -20,21 +27,27 @@ export default function AccountPage() {
           <button
             type="button"
             className="mt-3 text-sm text-accent"
-            onClick={() => signOut({ callbackUrl: "/" })}
+            onClick={() => signOut({ callbackUrl: inTg ? "/tg" : "/" })}
           >
             Выйти
           </button>
         </div>
       ) : (
         <p className="mt-6 text-ink">
-          <Link href="/login" className="text-accent">
-            Войти
-          </Link>{" "}
-          или{" "}
-          <Link href="/register" className="text-accent">
-            зарегистрироваться
-          </Link>
-          .
+          {inTg ? (
+            "Откройте Mini App из Telegram, чтобы войти автоматически."
+          ) : (
+            <>
+              <Link href={loginHref} className="text-accent">
+                Войти
+              </Link>{" "}
+              или{" "}
+              <Link href={registerHref} className="text-accent">
+                зарегистрироваться
+              </Link>
+              .
+            </>
+          )}
         </p>
       )}
       <h2 className="mt-10 text-xl text-ink">Заказы</h2>
@@ -46,7 +59,7 @@ export default function AccountPage() {
         <ul className="mt-4 grid gap-3">
           {shop.orders.map((order) => (
             <li key={order.number} className="rounded-[16px] border border-line p-4">
-              <Link href={`/account/orders/${order.number}`} className="text-ink">
+              <Link href={`${ordersBase}/${order.number}`} className="text-ink">
                 {order.number}
               </Link>
               <p className="mt-1 text-sm text-muted">

@@ -4,12 +4,14 @@ import { motion, useReducedMotion } from "motion/react"
 import Image from "next/image"
 import Link from "next/link"
 import { CardActions } from "@/components/card-actions"
+import { useAppHref } from "@/components/link-base"
 import { formatUzs, type Product } from "@/data/catalog"
 
 export function ProductCard({ product }: { product: Product }) {
   const image = product.images[0]
   const inStock = product.stockQuantity > 0
   const reduce = useReducedMotion()
+  const href = useAppHref(`/product/${product.slug}`)
 
   return (
     <motion.article
@@ -17,7 +19,7 @@ export function ProductCard({ product }: { product: Product }) {
       transition={{ type: "spring", stiffness: 320, damping: 24 }}
       className="group flex h-full flex-col overflow-hidden rounded-[16px] border border-line/80 bg-surface transition-[border-color,box-shadow] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-accent/35 hover:shadow-[0_18px_40px_rgb(0_0_0/0.28)]"
     >
-      <Link href={`/product/${product.slug}`} className="block">
+      <Link href={href} className="block">
         <div className="relative aspect-[4/5] bg-white">
           {image ? (
             <div className="absolute inset-3">

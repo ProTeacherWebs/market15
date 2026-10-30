@@ -1,4 +1,7 @@
+"use client"
+
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { storeDraft } from "@/data/store"
 
 const links = [
@@ -10,6 +13,9 @@ const links = [
 ] as const
 
 export function SiteFooter() {
+  const pathname = usePathname()
+  if (pathname.startsWith("/tg")) return null
+
   return (
     <footer className="mt-auto border-t border-line/80 bg-surface/30">
       <div className="mx-auto grid max-w-[1400px] gap-8 px-4 py-10 md:grid-cols-[1.2fr_1fr_1fr]">

@@ -33,9 +33,11 @@ const sorts: { value: SortKey; label: string }[] = [
 export async function CatalogScreen({
   searchParams,
   categorySlug,
+  pathPrefix = "",
 }: {
   searchParams: Promise<Search>
   categorySlug?: string
+  pathPrefix?: string
 }) {
   const params = await searchParams
   const [categoryList, productList] = await Promise.all([
@@ -71,7 +73,9 @@ export async function CatalogScreen({
     productList,
     categoryList,
   )
-  const base = category ? `/catalog/${category.slug}` : "/catalog"
+  const base = category
+    ? `${pathPrefix}/catalog/${category.slug}`
+    : `${pathPrefix}/catalog`
   const brands = brandsFor(category?.slug, productList, categoryList)
   const attributes = attributeChoices(category?.slug, productList, categoryList)
 
@@ -195,7 +199,10 @@ export async function CatalogScreen({
       {result.total === 0 ? (
         <p className="mt-6 text-ink">
           Ничего не нашлось. Измените фильтры или{" "}
-          <Link href="/catalog" className="text-accent transition-colors hover:text-[#d4ec6e]">
+          <Link
+            href={`${pathPrefix}/catalog`}
+            className="text-accent transition-colors hover:text-[#d4ec6e]"
+          >
             откройте весь каталог
           </Link>
           .
