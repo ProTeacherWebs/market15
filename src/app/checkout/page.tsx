@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useRef, useState } from "react"
+import { AddressPicker } from "@/components/address-picker"
 import { Field } from "@/components/field"
 import { useAppHref } from "@/components/link-base"
 import { useShop } from "@/components/shop-provider"
@@ -39,7 +40,9 @@ export default function CheckoutPage() {
     if (name.length < 2) next.name = "Укажите имя"
     if (phone.replace(/\D/g, "").length < 9) next.phone = "Укажите телефон"
     if (!email.includes("@") || !email.includes(".")) next.email = "Укажите почту"
-    if (method === "courier" && address.length < 5) next.address = "Укажите адрес"
+    if (method === "courier" && address.length < 5) {
+      next.address = "Найдите место на карте и подтвердите адрес"
+    }
     setErrors(next)
     setFormError("")
     if (Object.keys(next).length > 0) return
@@ -162,9 +165,7 @@ export default function CheckoutPage() {
             Доставка по Ташкенту, стоимость не подтверждена
           </label>
         </fieldset>
-        {method === "courier" ? (
-          <Field name="address" label="Адрес" autoComplete="street-address" error={errors.address} />
-        ) : null}
+        {method === "courier" ? <AddressPicker name="address" error={errors.address} /> : null}
         {formError ? <p className="text-sm text-danger">{formError}</p> : null}
         <button
           type="submit"
